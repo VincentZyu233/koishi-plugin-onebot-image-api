@@ -11,6 +11,8 @@ import {
   IMAGE_STYLES,
   IMAGE_TYPES
 } from '../type';
+import { DocsExporter } from './export/exportDocs';
+import { resolve } from 'path';
 
 export interface RestfulServerConfig {
   restfulServiceHost: string;
@@ -397,9 +399,26 @@ export class RestfulServer {
       this.ctx.logger.info(`  - POST ${this.config.restfulServiceRootRouter}/render-user-info`);
       this.ctx.logger.info(`  - POST ${this.config.restfulServiceRootRouter}/render-admin-list`);
       this.ctx.logger.info(`Swagger documentation available at: http://${this.config.restfulServiceHost}:${this.config.restfulServicePort}${this.config.restfulServiceRootRouter}/docs`);
+      
+      // 导出API文档
+      await this.exportApiDocs();
     } catch (error) {
       this.ctx.logger.error(`Failed to start RESTful server: ${error.message}`);
       throw error;
+    }
+  }
+
+  /**
+   * 导出API文档到文件
+   */
+  private async exportApiDocs(): Promise<void> {
+    try {
+      const exportPath = resolve(__dirname, '../api/export');
+      const docsExporter = new DocsExporter(this.fastify, this.ctx, { exportPath });
+      await docsExporter.exportAllDocs();
+    } catch (error) {
+      this.ctx.logger.error(`导出API文档失败: ${error.message}`);
+      // 不抛出错误，避免影响服务器启动
     }
   }
 
