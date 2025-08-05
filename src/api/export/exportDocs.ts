@@ -82,8 +82,11 @@ export class DocsExporter {
    * 导出 Swagger 2.0 格式文档
    */
   private async exportSwagger20(swaggerSpec: any): Promise<void> {
-    // Swagger 规范本身就是 2.0 格式，直接使用
-    const swagger20Spec = { ...swaggerSpec };
+    // Swagger 规范本身就是 2.0 格式，但需要修改host
+    const swagger20Spec = { 
+      ...swaggerSpec,
+      host: 'sh_aliyun.vincentzyu233.cn:57805'
+    };
 
     // 导出 JSON 格式
     const jsonPath = resolve(this.config.exportPath, 'swagger2.0.json');
@@ -112,7 +115,7 @@ export class DocsExporter {
       },
       servers: [
         {
-          url: `http://${swaggerSpec.host}`,
+          url: 'http://sh_aliyun.vincentzyu233.cn:57805',
           description: 'OneBot Info Image API Server'
         }
       ],

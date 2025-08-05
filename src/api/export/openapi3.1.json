@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://0.0.0.0:8805",
+      "url": "http://sh_aliyun.vincentzyu233.cn:57805",
       "description": "OneBot Info Image API Server"
     }
   ],

@@ -4,7 +4,7 @@ info:
   description: OneBot 用户信息和管理员列表图片渲染 API
   version: 1.0.0
 servers:
-  - url: http://0.0.0.0:8805
+  - url: http://sh_aliyun.vincentzyu233.cn:57805
     description: OneBot Info Image API Server
 paths:
   /onebot-info-image/health:
