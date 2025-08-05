@@ -13,7 +13,6 @@ import {
 } from '../type';
 import { DocsExporter } from './export/exportDocs';
 import { resolve } from 'path';
-import * as packageJson from '../../package.json';
 
 export interface RestfulServerConfig {
   restfulServiceHost: string;
@@ -41,7 +40,6 @@ export class RestfulServer {
         info: {
           title: 'OneBot Info Image API',
           description: 'OneBot 用户信息和管理员列表图片渲染 API',
-          version: packageJson.version
         },
         host: `${this.config.restfulServiceHost}:${this.config.restfulServicePort}`,
         schemes: ['http'],
