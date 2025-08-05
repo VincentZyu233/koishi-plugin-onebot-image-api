@@ -1,5 +1,5 @@
 {
-  "name": "koishi-plugin-onebot-info-image",
+  "name": "koishi-plugin-onebot-info-image-api",
   "description": "用onebot api获取用户详细信息/群管理员列表信息，可以发纯文本/合并转发/渲染图片。 现在只做了lagrange和napcat的适配",
   "version": "0.1.0-alpha.5+20250802",
   "main": "lib/index.js",
@@ -34,5 +34,10 @@
         "http"
       ]
     }
+  },
+  "dependencies": {
+    "@fastify/swagger": "^9.5.1",
+    "@fastify/swagger-ui": "^5.2.3",
+    "fastify": "^5.4.0"
   }
 }

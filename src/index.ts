@@ -8,8 +8,14 @@ import { IMAGE_STYLES, type ImageStyle, IMAGE_TYPES, type ImageType, ONEBOT_IMPL
 import { renderUserInfo } from './renderUserInfo'
 import { renderAdminList } from './renderAdminList'
 import { convertToUnifiedUserInfo, convertToUnifiedAdminInfo, convertToUnifiedContextInfo, UnifiedUserInfo, UnifiedAdminInfo, UnifiedContextInfo } from './type'
+import { RestfulServer } from './api'
+import { validateFonts } from './utils';
 
 export const name = 'onebot-info-image'
+
+export const inject = {
+    required: ["puppeteer", "http"]
+}
 
 const pkg = JSON.parse(
   readFileSync(resolve(__dirname, '../package.json'), 'utf-8')
@@ -70,6 +76,10 @@ export interface Config {
   screenshotQuality: number;
 
   sendForward: boolean
+
+  restfulServiceHost: string;
+  restfulServicePort: number;
+  restfulServiceRootRouter: string;
 
   verboseSessionOutput: boolean
   verboseConsoleOutput: boolean
@@ -149,6 +159,19 @@ export const Config: Schema<Config> = Schema.intersect([
   }).description('发送 onebot转发消息 配置 ✉️'),
 
   Schema.object({
+    restfulServiceHost: Schema.string()
+      .default('0.0.0.0')
+      .description('RESTful 服务主机地址。'),
+    restfulServicePort: Schema.number()
+      .min(0).max(65535).step(1)
+      .default(8805)
+      .description('RESTful 服务端口号。'),
+    restfulServiceRootRouter: Schema.string()
+      .default('/onebot-info-image')
+      .description('RESTful 服务根路由。'),
+  }).description('RESTful 服务 配置 🌐'),
+
+  Schema.object({
     verboseSessionOutput: Schema.boolean()
       .default(false)
       .description('🗣️ 是否在会话中输出详细信息。(生产环境别开，东西很多)'),
@@ -159,11 +182,43 @@ export const Config: Schema<Config> = Schema.intersect([
 
 ]);
 
-export const inject = {
-    required: ["puppeteer", "http"] // 确保注入 puppeteer 和 http
-}
-
 export function apply(ctx: Context, config: Config) {
+    // 验证并下载字体文件
+  validateFonts(ctx).catch(error => {
+    ctx.logger.error(`字体文件验证失败: ${error.message}`);
+  });
+
+  // 启动 RESTful 服务器
+  let restfulServer: RestfulServer | null = null;
+  
+  const startRestfulServer = async () => {
+    if (restfulServer) {
+      await restfulServer.stop();
+    }
+    
+    restfulServer = new RestfulServer(ctx, {
+      restfulServiceHost: config.restfulServiceHost,
+      restfulServicePort: config.restfulServicePort,
+      restfulServiceRootRouter: config.restfulServiceRootRouter
+    });
+    
+    try {
+      await restfulServer.start();
+    } catch (error) {
+      ctx.logger.error(`Failed to start RESTful server: ${error.message}`);
+    }
+  };
+
+  // 插件启动时启动服务器
+  ctx.on('ready', startRestfulServer);
+
+  // 插件停止时停止服务器
+  ctx.on('dispose', async () => {
+    if (restfulServer) {
+      await restfulServer.stop();
+      restfulServer = null;
+    }
+  });
 
   //帮助文本中的 结果信息格式
   const responseHint = [
