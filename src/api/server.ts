@@ -13,6 +13,7 @@ import {
 } from '../type';
 import { DocsExporter } from './export/exportDocs';
 import { resolve } from 'path';
+import * as packageJson from '../../package.json';
 
 export interface RestfulServerConfig {
   restfulServiceHost: string;
@@ -40,7 +41,7 @@ export class RestfulServer {
         info: {
           title: 'OneBot Info Image API',
           description: 'OneBot 用户信息和管理员列表图片渲染 API',
-          version: '1.0.0'
+          version: packageJson.version
         },
         host: `${this.config.restfulServiceHost}:${this.config.restfulServicePort}`,
         schemes: ['http'],
@@ -99,6 +100,16 @@ export class RestfulServer {
         tags: ['render'],
         summary: '渲染用户信息图片',
         description: '根据用户信息和上下文信息渲染用户信息图片',
+        querystring: {
+          type: 'object',
+          properties: {
+            'only-image': { 
+              type: 'string', 
+              enum: ['true', 'false'],
+              description: '是否直接返回图片数据而不是JSON响应，默认为false'
+            }
+          }
+        },
         body: {
           type: 'object',
           required: ['userInfo', 'contextInfo'],
@@ -115,7 +126,33 @@ export class RestfulServer {
                 lastSpeakTime: { type: 'string', format: 'date-time', description: '最后发言时间' },
                 joinTime: { type: 'string', format: 'date-time', description: '加入时间' },
                 speakCount: { type: 'number', description: '发言次数' },
-                cardName: { type: 'string', description: '群名片' }
+                cardName: { type: 'string', description: '群名片' },
+                // 新增字段 - 基于 napcat 格式
+                group_level: { type: 'string', description: '群等级' },
+                title: { type: 'string', description: '专属头衔' },
+                last_sent_time: { type: 'number', description: '最后发言时间戳' },
+                qq_level: { type: 'number', description: 'QQ等级' },
+                qqLevel: { type: 'number', description: 'QQ等级(备用字段)' },
+                qid: { type: 'string', description: 'QID' },
+                eMail: { type: 'string', description: '邮箱' },
+                phoneNum: { type: 'string', description: '电话号码' },
+                address: { type: 'string', description: '详细地址' },
+                country: { type: 'string', description: '国家' },
+                province: { type: 'string', description: '省份' },
+                city: { type: 'string', description: '城市' },
+                shengXiao: { type: 'number', description: '生肖(数字编码)' },
+                constellation: { type: 'number', description: '星座(数字编码)' },
+                birthday_year: { type: 'number', description: '出生年份' },
+                birthday_month: { type: 'number', description: '出生月份' },
+                birthday_day: { type: 'number', description: '出生日期' },
+                is_vip: { type: 'boolean', description: '是否为VIP' },
+                is_years_vip: { type: 'boolean', description: '是否为年费VIP' },
+                vip_level: { type: 'number', description: 'VIP等级' },
+                status: { type: 'number', description: '用户状态' },
+                sex: { type: 'string', description: '性别' },
+                age: { type: 'number', description: '年龄' },
+                reg_time: { type: 'number', description: '注册时间戳' },
+                long_nick: { type: 'string', description: '个性签名' }
               }
             },
             contextInfo: {
@@ -175,6 +212,10 @@ export class RestfulServer {
           screenshotQuality?: number;
         };
 
+        // 获取查询参数
+        const queryParams = request.query as { 'only-image'?: string };
+        const onlyImage = queryParams['only-image'] === 'true';
+
         // 参数验证
         if (!userInfo || !contextInfo) {
           return reply.status(400).send({
@@ -183,7 +224,7 @@ export class RestfulServer {
         }
 
         // 设置默认值
-        const finalImageStyle = imageStyle || IMAGE_STYLES.LXGW_WENKAI;
+        const finalImageStyle = imageStyle || IMAGE_STYLES.SOURCE_HAN_SERIF_SC;
         const finalEnableDarkMode = enableDarkMode ?? false;
         const finalImageType = imageType || IMAGE_TYPES.PNG;
         const finalScreenshotQuality = screenshotQuality ?? 80;
@@ -199,6 +240,18 @@ export class RestfulServer {
           finalScreenshotQuality
         );
 
+        // 如果only-image=true，直接返回图片数据
+        if (onlyImage) {
+          const imageBuffer = Buffer.from(imageBase64, 'base64');
+          const mimeType = finalImageType === IMAGE_TYPES.PNG ? 'image/png' : 
+                          finalImageType === IMAGE_TYPES.JPEG ? 'image/jpeg' : 
+                          'image/webp';
+          
+          reply.type(mimeType);
+          return reply.send(imageBuffer);
+        }
+
+        // 默认返回JSON响应
         return {
           success: true,
           data: {
@@ -223,6 +276,16 @@ export class RestfulServer {
         tags: ['render'],
         summary: '渲染管理员列表图片',
         description: '根据管理员列表和上下文信息渲染管理员列表图片',
+        querystring: {
+          type: 'object',
+          properties: {
+            'only-image': { 
+              type: 'string', 
+              enum: ['true', 'false'],
+              description: '是否直接返回图片数据而不是JSON响应，默认为false'
+            }
+          }
+        },
         body: {
           type: 'object',
           required: ['admins', 'contextInfo'],
@@ -298,6 +361,10 @@ export class RestfulServer {
           screenshotQuality?: number;
         };
 
+        // 获取查询参数
+        const queryParams = request.query as { 'only-image'?: string };
+        const onlyImage = queryParams['only-image'] === 'true';
+
         // 参数验证
         if (!admins || !Array.isArray(admins) || !contextInfo) {
           return reply.status(400).send({
@@ -312,7 +379,7 @@ export class RestfulServer {
         }
 
         // 设置默认值
-        const finalImageStyle = imageStyle || IMAGE_STYLES.LXGW_WENKAI;
+        const finalImageStyle = imageStyle || IMAGE_STYLES.SOURCE_HAN_SERIF_SC;
         const finalEnableDarkMode = enableDarkMode ?? false;
         const finalImageType = imageType || IMAGE_TYPES.PNG;
         const finalScreenshotQuality = screenshotQuality ?? 80;
@@ -328,6 +395,18 @@ export class RestfulServer {
           finalScreenshotQuality
         );
 
+        // 如果only-image=true，直接返回图片数据
+        if (onlyImage) {
+          const imageBuffer = Buffer.from(imageBase64, 'base64');
+          const mimeType = finalImageType === IMAGE_TYPES.PNG ? 'image/png' : 
+                          finalImageType === IMAGE_TYPES.JPEG ? 'image/jpeg' : 
+                          'image/webp';
+          
+          reply.type(mimeType);
+          return reply.send(imageBuffer);
+        }
+
+        // 默认返回JSON响应
         return {
           success: true,
           data: {

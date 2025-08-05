@@ -2,10 +2,10 @@ openapi: 3.1.0
 info:
   title: OneBot Info Image API
   description: OneBot 用户信息和管理员列表图片渲染 API
-  version: 1.0.0
+  version: 0.2.2-alpha.1+20250805
 servers:
   - url: http://sh_aliyun.vincentzyu233.cn:57805
-    description: OneBot Info Image API Server
+    description: API Server
 paths:
   /onebot-info-image/health:
     get:
@@ -16,267 +16,338 @@ paths:
       responses:
         '200':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-                  timestamp:
-                    type: string
-                    format: date-time
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              timestamp:
+                type: string
+                format: date-time
   /onebot-info-image/render-user-info:
     post:
       summary: 渲染用户信息图片
       description: 根据用户信息和上下文信息渲染用户信息图片
       tags:
         - render
-      parameters: []
+      parameters:
+        - type: string
+          enum:
+            - 'true'
+            - 'false'
+          description: 是否直接返回图片数据而不是JSON响应，默认为false
+          required: false
+          in: query
+          name: only-image
+        - name: body
+          in: body
+          schema:
+            type: object
+            required:
+              - userInfo
+              - contextInfo
+            properties:
+              userInfo:
+                type: object
+                description: 用户信息
+                properties:
+                  userId:
+                    type: string
+                    description: 用户ID
+                  nickname:
+                    type: string
+                    description: 用户昵称
+                  avatar:
+                    type: string
+                    description: 用户头像URL
+                  level:
+                    type: number
+                    description: 用户等级
+                  exp:
+                    type: number
+                    description: 用户经验值
+                  lastSpeakTime:
+                    type: string
+                    format: date-time
+                    description: 最后发言时间
+                  joinTime:
+                    type: string
+                    format: date-time
+                    description: 加入时间
+                  speakCount:
+                    type: number
+                    description: 发言次数
+                  cardName:
+                    type: string
+                    description: 群名片
+                  group_level:
+                    type: string
+                    description: 群等级
+                  title:
+                    type: string
+                    description: 专属头衔
+                  last_sent_time:
+                    type: number
+                    description: 最后发言时间戳
+                  qq_level:
+                    type: number
+                    description: QQ等级
+                  qqLevel:
+                    type: number
+                    description: QQ等级(备用字段)
+                  qid:
+                    type: string
+                    description: QID
+                  eMail:
+                    type: string
+                    description: 邮箱
+                  phoneNum:
+                    type: string
+                    description: 电话号码
+                  address:
+                    type: string
+                    description: 详细地址
+                  country:
+                    type: string
+                    description: 国家
+                  province:
+                    type: string
+                    description: 省份
+                  city:
+                    type: string
+                    description: 城市
+                  shengXiao:
+                    type: number
+                    description: 生肖(数字编码)
+                  constellation:
+                    type: number
+                    description: 星座(数字编码)
+                  birthday_year:
+                    type: number
+                    description: 出生年份
+                  birthday_month:
+                    type: number
+                    description: 出生月份
+                  birthday_day:
+                    type: number
+                    description: 出生日期
+                  is_vip:
+                    type: boolean
+                    description: 是否为VIP
+                  is_years_vip:
+                    type: boolean
+                    description: 是否为年费VIP
+                  vip_level:
+                    type: number
+                    description: VIP等级
+                  status:
+                    type: number
+                    description: 用户状态
+                  sex:
+                    type: string
+                    description: 性别
+                  age:
+                    type: number
+                    description: 年龄
+                  reg_time:
+                    type: number
+                    description: 注册时间戳
+                  long_nick:
+                    type: string
+                    description: 个性签名
+              contextInfo:
+                type: object
+                description: 上下文信息
+                properties:
+                  groupId:
+                    type: string
+                    description: 群组ID
+                  groupName:
+                    type: string
+                    description: 群组名称
+                  groupAvatar:
+                    type: string
+                    description: 群组头像URL
+                  onebotImpl:
+                    type: string
+                    description: OneBot实现名称
+              imageStyle:
+                type: string
+                enum:
+                  - 思源宋体SourceHanSerifSC
+                  - 落霞孤鹜文楷LXGWWenKai
+                description: 图片样式
+              enableDarkMode:
+                type: boolean
+                description: 是否启用暗色模式
+              imageType:
+                type: string
+                enum:
+                  - png
+                  - jpeg
+                  - webp
+                description: 图片类型
+              screenshotQuality:
+                type: number
+                minimum: 1
+                maximum: 100
+                description: 截图质量
       responses:
         '200':
           description: Default Response
-          content:
-            application/json:
-              schema:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      imageBase64:
-                        type: string
-                        description: Base64编码的图片数据
-                      imageType:
-                        type: string
-                        description: 图片类型
-                      timestamp:
-                        type: string
-                        format: date-time
+                  imageBase64:
+                    type: string
+                    description: Base64编码的图片数据
+                  imageType:
+                    type: string
+                    description: 图片类型
+                  timestamp:
+                    type: string
+                    format: date-time
         '400':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
         '500':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  message:
-                    type: string
-      requestBody:
-        description: ''
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - userInfo
-                - contextInfo
-              properties:
-                userInfo:
-                  type: object
-                  description: 用户信息
-                  properties:
-                    userId:
-                      type: string
-                      description: 用户ID
-                    nickname:
-                      type: string
-                      description: 用户昵称
-                    avatar:
-                      type: string
-                      description: 用户头像URL
-                    level:
-                      type: number
-                      description: 用户等级
-                    exp:
-                      type: number
-                      description: 用户经验值
-                    lastSpeakTime:
-                      type: string
-                      format: date-time
-                      description: 最后发言时间
-                    joinTime:
-                      type: string
-                      format: date-time
-                      description: 加入时间
-                    speakCount:
-                      type: number
-                      description: 发言次数
-                    cardName:
-                      type: string
-                      description: 群名片
-                contextInfo:
-                  type: object
-                  description: 上下文信息
-                  properties:
-                    groupId:
-                      type: string
-                      description: 群组ID
-                    groupName:
-                      type: string
-                      description: 群组名称
-                    groupAvatar:
-                      type: string
-                      description: 群组头像URL
-                    onebotImpl:
-                      type: string
-                      description: OneBot实现名称
-                imageStyle:
-                  type: string
-                  enum:
-                    - 思源宋体SourceHanSerifSC
-                    - 落霞孤鹜文楷LXGWWenKai
-                  description: 图片样式
-                enableDarkMode:
-                  type: boolean
-                  description: 是否启用暗色模式
-                imageType:
-                  type: string
-                  enum:
-                    - png
-                    - jpeg
-                    - webp
-                  description: 图片类型
-                screenshotQuality:
-                  type: number
-                  minimum: 1
-                  maximum: 100
-                  description: 截图质量
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
   /onebot-info-image/render-admin-list:
     post:
       summary: 渲染管理员列表图片
       description: 根据管理员列表和上下文信息渲染管理员列表图片
       tags:
         - render
-      parameters: []
+      parameters:
+        - type: string
+          enum:
+            - 'true'
+            - 'false'
+          description: 是否直接返回图片数据而不是JSON响应，默认为false
+          required: false
+          in: query
+          name: only-image
+        - name: body
+          in: body
+          schema:
+            type: object
+            required:
+              - admins
+              - contextInfo
+            properties:
+              admins:
+                type: array
+                description: 管理员列表
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                      description: 管理员用户ID
+                    nickname:
+                      type: string
+                      description: 管理员昵称
+                    avatar:
+                      type: string
+                      description: 管理员头像URL
+                    role:
+                      type: string
+                      description: 管理员角色
+                    cardName:
+                      type: string
+                      description: 群名片
+              contextInfo:
+                type: object
+                description: 上下文信息
+                properties:
+                  groupId:
+                    type: string
+                    description: 群组ID
+                  groupName:
+                    type: string
+                    description: 群组名称
+                  groupAvatar:
+                    type: string
+                    description: 群组头像URL
+                  onebotImpl:
+                    type: string
+                    description: OneBot实现名称
+              imageStyle:
+                type: string
+                enum:
+                  - 思源宋体SourceHanSerifSC
+                  - 落霞孤鹜文楷LXGWWenKai
+                description: 图片样式
+              enableDarkMode:
+                type: boolean
+                description: 是否启用暗色模式
+              imageType:
+                type: string
+                enum:
+                  - png
+                  - jpeg
+                  - webp
+                description: 图片类型
+              screenshotQuality:
+                type: number
+                minimum: 1
+                maximum: 100
+                description: 截图质量
       responses:
         '200':
           description: Default Response
-          content:
-            application/json:
-              schema:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      imageBase64:
-                        type: string
-                        description: Base64编码的图片数据
-                      imageType:
-                        type: string
-                        description: 图片类型
-                      timestamp:
-                        type: string
-                        format: date-time
+                  imageBase64:
+                    type: string
+                    description: Base64编码的图片数据
+                  imageType:
+                    type: string
+                    description: 图片类型
+                  timestamp:
+                    type: string
+                    format: date-time
         '400':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
         '500':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  message:
-                    type: string
-      requestBody:
-        description: ''
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - admins
-                - contextInfo
-              properties:
-                admins:
-                  type: array
-                  description: 管理员列表
-                  items:
-                    type: object
-                    properties:
-                      userId:
-                        type: string
-                        description: 管理员用户ID
-                      nickname:
-                        type: string
-                        description: 管理员昵称
-                      avatar:
-                        type: string
-                        description: 管理员头像URL
-                      role:
-                        type: string
-                        description: 管理员角色
-                      cardName:
-                        type: string
-                        description: 群名片
-                contextInfo:
-                  type: object
-                  description: 上下文信息
-                  properties:
-                    groupId:
-                      type: string
-                      description: 群组ID
-                    groupName:
-                      type: string
-                      description: 群组名称
-                    groupAvatar:
-                      type: string
-                      description: 群组头像URL
-                    onebotImpl:
-                      type: string
-                      description: OneBot实现名称
-                imageStyle:
-                  type: string
-                  enum:
-                    - 思源宋体SourceHanSerifSC
-                    - 落霞孤鹜文楷LXGWWenKai
-                  description: 图片样式
-                enableDarkMode:
-                  type: boolean
-                  description: 是否启用暗色模式
-                imageType:
-                  type: string
-                  enum:
-                    - png
-                    - jpeg
-                    - webp
-                  description: 图片类型
-                screenshotQuality:
-                  type: number
-                  minimum: 1
-                  maximum: 100
-                  description: 截图质量
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
   /onebot-info-image/config:
     get:
       summary: 获取配置信息
@@ -286,44 +357,28 @@ paths:
       responses:
         '200':
           description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  imageStyles:
-                    type: array
-                    items:
-                      type: string
-                    description: 支持的图片样式列表
-                  imageTypes:
-                    type: array
-                    items:
-                      type: string
-                    description: 支持的图片类型列表
-                  defaultImageStyle:
-                    type: string
-                    description: 默认图片样式
-                  defaultImageType:
-                    type: string
-                    description: 默认图片类型
-                  defaultScreenshotQuality:
-                    type: number
-                    description: 默认截图质量
+          schema:
+            type: object
+            properties:
+              imageStyles:
+                type: array
+                items:
+                  type: string
+                description: 支持的图片样式列表
+              imageTypes:
+                type: array
+                items:
+                  type: string
+                description: 支持的图片类型列表
+              defaultImageStyle:
+                type: string
+                description: 默认图片样式
+              defaultImageType:
+                type: string
+                description: 默认图片类型
+              defaultScreenshotQuality:
+                type: number
+                description: 默认截图质量
 components:
   schemas: {}
-  responses: {}
-  parameters: {}
-  examples: {}
-  requestBodies: {}
-  headers: {}
   securitySchemes: {}
-  links: {}
-  callbacks: {}
-tags:
-  - name: health
-    description: 健康检查相关接口
-  - name: config
-    description: 配置信息相关接口
-  - name: render
-    description: 图片渲染相关接口

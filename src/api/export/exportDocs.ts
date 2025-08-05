@@ -109,143 +109,38 @@ export class DocsExporter {
   private convertToOpenAPI31(swaggerSpec: any): any {
     const openapi31Spec = {
       openapi: '3.1.0',
-      info: {
-        ...swaggerSpec.info,
-        version: swaggerSpec.info.version || '1.0.0'
-      },
+      info: swaggerSpec.info,
       servers: [
         {
-          url: 'http://sh_aliyun.vincentzyu233.cn:57805',
-          description: 'OneBot Info Image API Server'
+          url: `http://sh_aliyun.vincentzyu233.cn:57805`,
+          description: 'API Server'
         }
       ],
-      paths: {},
+      paths: this.convertPathsToOpenAPI31(swaggerSpec.paths),
       components: {
-        schemas: {},
-        responses: {},
-        parameters: {},
-        examples: {},
-        requestBodies: {},
-        headers: {},
-        securitySchemes: {},
-        links: {},
-        callbacks: {}
-      },
-      tags: swaggerSpec.tags || []
+        schemas: swaggerSpec.definitions || {},
+        securitySchemes: swaggerSpec.securityDefinitions || {}
+      }
     };
-
-    // 转换路径
-    if (swaggerSpec.paths) {
-      for (const [path, pathItem] of Object.entries(swaggerSpec.paths)) {
-        openapi31Spec.paths[path] = this.convertPathItem(pathItem as any);
-      }
-    }
-
-    // 转换定义为组件
-    if (swaggerSpec.definitions) {
-      for (const [name, definition] of Object.entries(swaggerSpec.definitions)) {
-        openapi31Spec.components.schemas[name] = this.convertSchema(definition as any);
-      }
-    }
 
     return openapi31Spec;
   }
 
   /**
-   * 转换路径项
+   * 转换路径为 OpenAPI 3.1 格式
    */
-  private convertPathItem(pathItem: any): any {
-    const convertedPathItem: any = {};
-
-    for (const [method, operation] of Object.entries(pathItem)) {
-      if (['get', 'post', 'put', 'delete', 'options', 'head', 'patch', 'trace'].includes(method)) {
-        convertedPathItem[method] = this.convertOperation(operation as any);
+  private convertPathsToOpenAPI31(paths: any): any {
+    const convertedPaths: any = {};
+    
+    for (const [path, pathItem] of Object.entries(paths)) {
+      convertedPaths[path] = {};
+      
+      for (const [method, operation] of Object.entries(pathItem as any)) {
+        convertedPaths[path][method] = operation;
       }
     }
-
-    return convertedPathItem;
+    
+    return convertedPaths;
   }
 
-  /**
-   * 转换操作
-   */
-  private convertOperation(operation: any): any {
-    const convertedOperation: any = {
-      ...operation,
-      responses: {}
-    };
-
-    // 转换响应
-    if (operation.responses) {
-      for (const [statusCode, response] of Object.entries(operation.responses)) {
-        convertedOperation.responses[statusCode] = this.convertResponse(response as any);
-      }
-    }
-
-    // 转换请求体
-    if (operation.parameters) {
-      const bodyParam = operation.parameters.find((p: any) => p.in === 'body');
-      if (bodyParam) {
-        convertedOperation.requestBody = {
-          description: bodyParam.description || '',
-          required: bodyParam.required || false,
-          content: {
-            'application/json': {
-              schema: this.convertSchema(bodyParam.schema)
-            }
-          }
-        };
-        // 移除 body 参数
-        convertedOperation.parameters = operation.parameters.filter((p: any) => p.in !== 'body');
-      }
-    }
-
-    return convertedOperation;
-  }
-
-  /**
-   * 转换响应
-   */
-  private convertResponse(response: any): any {
-    const convertedResponse: any = {
-      description: response.description || ''
-    };
-
-    if (response.schema) {
-      convertedResponse.content = {
-        'application/json': {
-          schema: this.convertSchema(response.schema)
-        }
-      };
-    }
-
-    return convertedResponse;
-  }
-
-  /**
-   * 转换模式
-   */
-  private convertSchema(schema: any): any {
-    if (!schema) return {};
-
-    const convertedSchema = { ...schema };
-
-    // 递归转换嵌套的模式
-    if (schema.properties) {
-      convertedSchema.properties = {};
-      for (const [propName, propSchema] of Object.entries(schema.properties)) {
-        convertedSchema.properties[propName] = this.convertSchema(propSchema as any);
-      }
-    }
-
-    if (schema.items) {
-      convertedSchema.items = this.convertSchema(schema.items);
-    }
-
-    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-      convertedSchema.additionalProperties = this.convertSchema(schema.additionalProperties);
-    }
-
-    return convertedSchema;
-  }
-}
+ }

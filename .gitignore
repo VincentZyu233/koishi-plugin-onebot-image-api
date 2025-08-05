@@ -75,11 +75,8 @@ coverage.xml
 # pipenv
 Pipfile.lock
 
-# API测试生成的图片文件
-src/api/*.png
-src/api/*.jpg
-src/api/*.jpeg
-src/api/*.webp
+# API测试结果文件夹
+src/api/test/result/
 
 # 字体文件
 assets/*.ttf*

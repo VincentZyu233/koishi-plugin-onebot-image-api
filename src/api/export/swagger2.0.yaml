@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: OneBot Info Image API
   description: OneBot 用户信息和管理员列表图片渲染 API
-  version: 1.0.0
+  version: 0.2.2-alpha.1+20250805
 definitions: {}
 paths:
   /onebot-info-image/health:
@@ -30,6 +30,14 @@ paths:
       tags:
         - render
       parameters:
+        - type: string
+          enum:
+            - 'true'
+            - 'false'
+          description: 是否直接返回图片数据而不是JSON响应，默认为false
+          required: false
+          in: query
+          name: only-image
         - name: body
           in: body
           schema:
@@ -71,6 +79,81 @@ paths:
                   cardName:
                     type: string
                     description: 群名片
+                  group_level:
+                    type: string
+                    description: 群等级
+                  title:
+                    type: string
+                    description: 专属头衔
+                  last_sent_time:
+                    type: number
+                    description: 最后发言时间戳
+                  qq_level:
+                    type: number
+                    description: QQ等级
+                  qqLevel:
+                    type: number
+                    description: QQ等级(备用字段)
+                  qid:
+                    type: string
+                    description: QID
+                  eMail:
+                    type: string
+                    description: 邮箱
+                  phoneNum:
+                    type: string
+                    description: 电话号码
+                  address:
+                    type: string
+                    description: 详细地址
+                  country:
+                    type: string
+                    description: 国家
+                  province:
+                    type: string
+                    description: 省份
+                  city:
+                    type: string
+                    description: 城市
+                  shengXiao:
+                    type: number
+                    description: 生肖(数字编码)
+                  constellation:
+                    type: number
+                    description: 星座(数字编码)
+                  birthday_year:
+                    type: number
+                    description: 出生年份
+                  birthday_month:
+                    type: number
+                    description: 出生月份
+                  birthday_day:
+                    type: number
+                    description: 出生日期
+                  is_vip:
+                    type: boolean
+                    description: 是否为VIP
+                  is_years_vip:
+                    type: boolean
+                    description: 是否为年费VIP
+                  vip_level:
+                    type: number
+                    description: VIP等级
+                  status:
+                    type: number
+                    description: 用户状态
+                  sex:
+                    type: string
+                    description: 性别
+                  age:
+                    type: number
+                    description: 年龄
+                  reg_time:
+                    type: number
+                    description: 注册时间戳
+                  long_nick:
+                    type: string
+                    description: 个性签名
               contextInfo:
                 type: object
                 description: 上下文信息
@@ -152,6 +235,14 @@ paths:
       tags:
         - render
       parameters:
+        - type: string
+          enum:
+            - 'true'
+            - 'false'
+          description: 是否直接返回图片数据而不是JSON响应，默认为false
+          required: false
+          in: query
+          name: only-image
         - name: body
           in: body
           schema:

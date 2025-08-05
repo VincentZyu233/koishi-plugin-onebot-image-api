@@ -228,9 +228,8 @@ const getLXGWWenKaiUserInfoHtmlStr = async (userInfo, contextInfo, avatarBase64,
         hour12: false
     });
 
-    const getShengXiao = num => (['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'][num] || '');
+    const getShengXiao = num => (['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'][num - 1] || '');
     const getConstellation = num => (['摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座'][num - 1] || '');
-    const getBloodType = num => (['O', 'A', 'B', 'AB'][num] || '');
 
     const formatAddress = (user) => {
         const parts = [user.country, user.province, user.city, user.postCode].filter(part => part && part !== '0' && part !== '-');
@@ -341,16 +340,15 @@ ${contextInfo.memberCount?`<div class="group-member-count">群人数: ${contextI
 <div class="info-card"><div class="info-label">性别</div><div class="info-value">${userInfo.sex === 'male'?'男':userInfo.sex === 'female'?'女':'未知'}</div></div>
 <div class="info-card"><div class="info-label">年龄</div><div class="info-value">${userInfo.age || '<span class="unknown">未知</span>'}</div></div>
 <div class="info-card"><div class="info-label">QQ等级</div><div class="info-value">${userInfo.qq_level || userInfo.level || '<span class="unknown">未知</span>'}</div></div>
-<div class="info-card"><div class="info-label">QID</div><div class="info-value">${userInfo.q_id || '<span class="unknown">未知</span>'}</div></div>
-${userInfo.sign||userInfo.longNick?`<div class="info-card full-width"><div class="info-label">个性签名</div><div class="info-value">${userInfo.sign||userInfo.longNick}</div></div>`:''}
-${userInfo.RegisterTime?`<div class="info-card full-width"><div class="info-label">注册时间</div><div class="info-value">${new Date(userInfo.RegisterTime).toLocaleString('zh-CN')}</div></div>`:''}
+<div class="info-card"><div class="info-label">QID</div><div class="info-value">${userInfo.qid || userInfo.q_id || '<span class="unknown">未知</span>'}</div></div>
+${userInfo.sign||userInfo.longNick||userInfo.long_nick?`<div class="info-card full-width"><div class="info-label">个性签名</div><div class="info-value">${userInfo.sign||userInfo.longNick||userInfo.long_nick}</div></div>`:''}
+${userInfo.RegisterTime||userInfo.reg_time?`<div class="info-card full-width"><div class="info-label">注册时间</div><div class="info-value">${userInfo.RegisterTime?new Date(userInfo.RegisterTime).toLocaleString('zh-CN'):userInfo.reg_time?new Date(userInfo.reg_time*1000).toLocaleString('zh-CN'):'未知'}</div></div>`:''}
 <div class="info-card"><div class="info-label">邮箱</div><div class="info-value">${(userInfo.eMail || userInfo.email) && userInfo.eMail !== '-' ? (userInfo.eMail || userInfo.email) : '<span class="unknown">未知</span>'}</div></div>
 <div class="info-card"><div class="info-label">电话</div><div class="info-value">${userInfo.phoneNum && userInfo.phoneNum !== '-' ? userInfo.phoneNum : '<span class="unknown">未知</span>'}</div></div>
 <div class="info-card full-width"><div class="info-label">地址信息</div><div class="info-value">${formatAddress(userInfo)}</div></div>
 <div class="info-card full-width"><div class="info-label">个人特征</div><div class="info-value multi-info-row">
 <div class="multi-info-item"><div class="info-label">生肖</div><div class="info-value">${getShengXiao(userInfo.shengXiao) || '<span class="unknown">未知</span>'}</div></div>
 <div class="multi-info-item"><div class="info-label">星座</div><div class="info-value">${getConstellation(userInfo.constellation) || '<span class="unknown">未知</span>'}</div></div>
-<div class="multi-info-item"><div class="info-label">血型</div><div class="info-value">${getBloodType(userInfo.kBloodType) ? `${getBloodType(userInfo.kBloodType)}型` : '<span class="unknown">未知</span>'}</div></div>
 </div></div>
 <div class="info-card full-width"><div class="info-label">生日</div><div class="info-value">${(userInfo.birthday_year && userInfo.birthday_month && userInfo.birthday_day) ? `${userInfo.birthday_year}年${userInfo.birthday_month}月${userInfo.birthday_day}日` : '<span class="unknown">未知</span>'}</div></div>
 <div class="info-card full-width"><div class="info-label">VIP信息</div><div class="info-value multi-info-row">
@@ -358,7 +356,7 @@ ${userInfo.RegisterTime?`<div class="info-card full-width"><div class="info-labe
 <div class="multi-info-item"><div class="info-label">年费VIP</div><div class="info-value">${userInfo.is_years_vip?'是':'否'}</div></div>
 <div class="multi-info-item"><div class="info-label">VIP等级</div><div class="info-value">${userInfo.vip_level || 0}</div></div>
 </div></div>
-<div class="info-card full-width"><div class="info-label">状态</div><div class="info-value">${(userInfo.status && userInfo.status.message) || '<span class="unknown">未知</span>'}</div></div>
+<div class="info-card full-width"><div class="info-label">状态</div><div class="info-value">${userInfo.status ? (typeof userInfo.status === 'object' && userInfo.status.message ? userInfo.status.message : userInfo.status) : '<span class="unknown">未知</span>'}</div></div>
 </div>
 </div>
 </div>
