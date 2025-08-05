@@ -78,7 +78,7 @@ def create_userinfo_request_data(style: str) -> Dict[Any, Any]:
             "last_sent_time": 1705312200000,  # 修正为毫秒时间戳
             "join_time": 1685577600000,  # 添加加群时间戳（毫秒）
             "qq_level": 64,
-            "qid": "qid_test_123456789",
+            "q_id": "qid_test_123456789",
             "eMail": "test@example.com",
             "phoneNum": "138****8888",
             "address": "北京市朝阳区某某街道",

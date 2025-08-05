@@ -81,8 +81,8 @@ const getSourceHanSerifSCStyleUserInfoHtmlStr = async (userInfo, contextInfo, av
         getInfoItem('年龄', getValue(userInfo.age)),
         getInfoItem('QQ等级', getValue(userInfo.qq_level || userInfo.level)),
         getInfoItem('QID', getValue(userInfo.q_id)),
-        getInfoItem('注册时间', formatMsTimestamp(userInfo.RegisterTime)),
-        getInfoItem('个性签名', getValue(userInfo.sign || userInfo.longNick), true),
+        getInfoItem('注册时间', formatMsTimestamp(userInfo.reg_time)),
+        getInfoItem('个性签名', getValue(userInfo.sign || userInfo.long_nick), true),
         getInfoItem('邮箱', getValue(userInfo.eMail || userInfo.email)),
         getInfoItem('电话', getValue(userInfo.phoneNum || userInfo.phone)),
         getInfoItem('地址信息', getLocationString(userInfo), true),
@@ -100,7 +100,7 @@ const getSourceHanSerifSCStyleUserInfoHtmlStr = async (userInfo, contextInfo, av
         `,
         getInfoItem('生日', getBirthday(userInfo), true),
         getInfoItem('VIP信息', `VIP: ${userInfo.is_vip ? '是' : '否'} | 年费VIP: ${userInfo.is_years_vip ? '是' : '否'} | VIP等级: ${userInfo.vip_level || 0}`, true),
-        getInfoItem('状态', getValue((userInfo.status && userInfo.status.message)), true)
+        getInfoItem('状态', getValue((userInfo.status || userInfo.status.message)), true)
     ];
 
     const groupSpecificHtml = contextInfo.isGroup ? `
@@ -277,7 +277,7 @@ body::before{content:'';position:absolute;top:20px;left:20px;right:20px;bottom:2
 .group-avatar{width:80px;height:80px;border-radius:12px;object-fit:cover;border:2px solid #d4af37;flex-shrink:0;}
 .group-info{display:flex;flex-direction:column;align-items:flex-start;text-align:left;flex-grow:1;}
 .group-id{font-size:16px;color:#8b4513;font-weight:700;}
-.group-name{font-size:16px;color:#8b4513;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:8px;padding:4px 8px;font-weight:700;margin-top:5px;}
+.group-name{font-size:14.5px;color:#8b4513;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:8px;padding:4px 8px;font-weight:700;margin-top:5px;}
 .group-member-count{font-size:14px;color:#a0522d;margin-top:5px;}
 .info-section{flex-grow:1;display:flex;flex-direction:column;}
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin:0;align-items:start;}

@@ -2,7 +2,6 @@ swagger: '2.0'
 info:
   title: OneBot Info Image API
   description: OneBot 用户信息和管理员列表图片渲染 API
-  version: 0.2.2-alpha.1+20250805
 definitions: {}
 paths:
   /onebot-info-image/health:
