@@ -1,6 +1,8 @@
 # koishi-plugin-onebot-info-image-api
 
 > 先archieve了捏，因为我感觉有更优雅的的方案捏(
+> 如果你想在koishi用，可以直接用这个呢：https://github.com/VincentZyuApps/koishi-plugin-onebot-info-image
+> 如果想在其他地方用，(正在制作中...)
 
 获取成员信息/管理员列表，发送文字/图片/合并转发消息，仅支持onebot
 
