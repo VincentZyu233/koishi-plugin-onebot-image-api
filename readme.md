@@ -1,6 +1,6 @@
-# koishi-plugin-onebot-info-image
+# koishi-plugin-onebot-info-image-api
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-onebot-info-image?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-onebot-info-image)
+> 先archieve了捏，因为我感觉有更优雅的的方案捏(
 
 获取成员信息/管理员列表，发送文字/图片/合并转发消息，仅支持onebot
 
